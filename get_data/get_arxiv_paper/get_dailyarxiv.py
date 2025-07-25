@@ -107,7 +107,7 @@ def get_papers_from_arxiv(category="cs.CV", date="2025-07-17"):
             
     return papers
 
-def update_data_json(date):
+def update_data_json(date,base_dir="public/data"):
     """
     更新 public/arxiv/data.json，采用嵌套结构：{ "2025": { "07": [18, ...] } }
     参数 date: "YYYY-MM-DD" 字符串
@@ -117,7 +117,7 @@ def update_data_json(date):
     year, month, day = date.split('-')
     day = int(day)
     try:
-        with open("public/arxiv/data.json", "r", encoding="utf-8") as f:
+        with open(os.path.join(base_dir, "data.json"), "r", encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         data = {}
@@ -167,7 +167,7 @@ def main():
     categories = ["cs.CV", "cs.AI", "cs.LG"]
     year = args.date[:4]
     month = args.date[5:7]
-    base_dir = f"{args.base_dir}/{year}/{month}"
+    base_dir = os.path.join(args.base_dir, year, month)
     os.makedirs(base_dir, exist_ok=True)
     for category in categories:
         file_name = f"{base_dir}/{args.date}_{category}.json"
@@ -180,12 +180,12 @@ def main():
         if len(papers) == 0:
             logger.info(f"No papers found for category on {args.date}. Skipping.")
             return
-        logger.info(f"Category {category}: Found {len(papers)} papers.")
         for paper in papers:
             paper["date"] = args.date
         with open(file_name, "w", encoding="utf-8") as f:
             json.dump(papers, f, ensure_ascii=False, indent=4)
-    update_data_json(args.date)
+        logger.info(f"Category {category}: Found {len(papers)} papers, saved to {file_name}.")
+    update_data_json(args.date,args.base_dir)
     
  
 if __name__ == "__main__":

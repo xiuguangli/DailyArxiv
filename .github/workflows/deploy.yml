@@ -30,8 +30,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Python scripts to generate data
-        run: bash get_data/get_arxiv_paper/run_all.sh
+      - name: Run Python scripts to Get Arxiv Papers
+        run: python get_data/get_arxiv_paper/get_dailyarxiv.py --date "$(date -d '8 hours ago' +%Y-%m-%d)"
+        env:
+          GEMINI_API_KEYS: ${{ secrets.GEMINI_API_KEYS }}
+          TZ: Asia/Shanghai
+      
+      - name: Run Python scripts to Get Overview
+        run: python get_data/get_gemini_overview/get_overview.py --task arxiv --date "$(date -d '8 hours ago' +%Y-%m-%d)"
         env:
           GEMINI_API_KEYS: ${{ secrets.GEMINI_API_KEYS }}
           TZ: Asia/Shanghai
@@ -48,7 +54,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/arxiv/
+          git add public/data/
           # 如果没有变化，git commit 会失败，所以用 || true 来防止 workflow 失败
           git commit -m "chore: update arxiv json [auto]" || echo "No changes to commit"
           git push origin main

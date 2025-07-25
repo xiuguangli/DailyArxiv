@@ -109,7 +109,7 @@ def get_papers_from_arxiv(category="cs.CV", date="2025-07-17"):
 
 def update_data_json(date,base_dir="public/data"):
     """
-    更新 public/arxiv/data.json，采用嵌套结构：{ "2025": { "07": [18, ...] } }
+    更新 base_dir/data.json，采用嵌套结构：{ "2025": { "07": [18, ...] } }
     参数 date: "YYYY-MM-DD" 字符串
     """
     import json
@@ -154,7 +154,7 @@ def update_data_json(date,base_dir="public/data"):
         for m in data[y]:
             data[y][m] = CompactList(data[y][m])
 
-    with open("public/arxiv/data.json", "w", encoding="utf-8") as f:
+    with open(os.path.join(base_dir, "data.json"), "w", encoding="utf-8") as f:
         f.write(compact_list_repr(data))
     logger.info(f"Updated data.json with date {date}.")
 

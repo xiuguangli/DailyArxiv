@@ -38,7 +38,7 @@ jobs:
       
       - name: Run Python scripts to Get Overview
         # run: python get_data/get_gemini_overview/get_overview.py --task arxiv --date "$(date -d '8 hours ago' +%Y-%m-%d)" --update gemini
-        run: python get_data/get_gemini_overview/get_overview.py --task arxiv --date 2025-07-18 --update gemini
+        run: python get_data/get_gemini_overview/get_overview.py --task arxiv --date 2025-07-17 --update gemini
         env:
           GEMINI_API_KEYS: ${{ secrets.GEMINI_API_KEYS }}
           TZ: Asia/Shanghai

@@ -158,6 +158,7 @@ def update_data_json(date,base_dir="public/data"):
         f.write(compact_list_repr(data))
     logger.info(f"Updated data.json with date {date}.")
 
+
 def main():
     parser = argparse.ArgumentParser(description="Fetch papers from arXiv.")
     today_str = datetime.now().strftime("%Y-%m-%d")
@@ -169,8 +170,12 @@ def main():
     month = args.date[5:7]
     base_dir = os.path.join(args.base_dir, year, month)
     os.makedirs(base_dir, exist_ok=True)
+    file_names = []
+    # 设置集合来去重
+    all_papers = set()
     for category in categories:
         file_name = f"{base_dir}/{args.date}_{category}.json"
+        file_names.append(file_name)
         if os.path.exists(file_name):
             logger.info(f"{file_name} 已存在, 跳过下载。")
             continue
@@ -182,9 +187,27 @@ def main():
             return
         for paper in papers:
             paper["date"] = args.date
+        
+        # 去重处理
+        for paper in papers:
+            arxiv_id = paper.get('arxiv_id', '')
+            if arxiv_id and arxiv_id not in all_papers:
+                all_papers.add(arxiv_id)
+            else:
+                papers.remove(paper)
+        
+        # 对进行去重处理之后的 order 字段进行处理
+        for i, paper in enumerate(papers):
+            paper["order"] = i + 1
+
         with open(file_name, "w", encoding="utf-8") as f:
             json.dump(papers, f, ensure_ascii=False, indent=4)
         logger.info(f"Category {category}: Found {len(papers)} papers, saved to {file_name}.")
+    
+    
+    
+    
+    
     update_data_json(args.date,args.base_dir)
     
  
